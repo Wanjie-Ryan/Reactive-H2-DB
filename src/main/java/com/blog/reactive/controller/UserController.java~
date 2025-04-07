@@ -1,11 +1,10 @@
 package com.blog.reactive.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -16,9 +15,15 @@ public class UserController {
     // the valid annotation tells spring to validate the incoming JSON object
     // because we are using mono, it will not emit data until there is an active subscriber
     // mono is like a container that will hold value, whilst String is the type of value being returned.
-    public Mono<userRest>  createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest ){
-        return Mono.just("User created");
+
+    // making the function return a specific HTTP status
+    @ResponseStatus
+    public Mono<userRest> createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest) {
+//        return Mono.just("User created");
         // the above code of line means that it emits only one string which is user created.
+        // take createUserRequest object and transform it to UserRest
+        // the map request takes content from the userRequest object, changes it UserRest object
+        return createUserRequest.map(request -> new userRest(UUID.randomUUID(), request.getFirstName(), request.getLastName(), request.getEmail()));
     }
 
 
