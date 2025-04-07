@@ -10,5 +10,5 @@ spring.r2dbc.password= test
 # NEVER- Never run any SQL scripts at startup
 spring.sql.init.mode=EMBEDDED
 
-#spring.h2.console.enabled=true
-#spring.h2.console.path=/h2-console
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console

@@ -24,13 +24,13 @@ public class H2ConsoleConfig {
         //    h2 is only useful in testing and development not in production
         // define the port number which you want the h2 console to be accessible.
         String WEB_PORT = "8082";
-        this.webServer = Server.createWebServer("webPort", WEB_PORT).start();
+        webServer = Server.createWebServer("-webPort", WEB_PORT).start();
     }
 
     // create an event listener to stop the web server when the application is closed
     @EventListener(ContextClosedEvent.class)
     public void stop() {
-        this.webServer.stop();
+        webServer.stop();
     }
 
 }
