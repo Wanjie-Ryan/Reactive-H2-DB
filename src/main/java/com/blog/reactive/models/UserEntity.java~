@@ -1,0 +1,22 @@
+package com.blog.reactive.models;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.util.UUID;
+
+@Table(name = "users")
+public class UserEntity {
+
+    @Id
+    private UUID id;
+    @Column("first_name")
+    private String firstName;
+    @Column("last_name")
+    private String lastName;
+    // if the name of the variable, eg. email is same as that for schema.sql, then there is no need for declaring the @Column property
+    private String email;
+    @Column("password")
+    private String password;
+}

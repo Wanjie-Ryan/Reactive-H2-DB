@@ -22,7 +22,7 @@ public class UserController {
     // making the function return a specific HTTP status
 //    @ResponseStatus(HttpStatus.CREATED)
     public Mono<ResponseEntity<userRest>> createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest) {
-        
+
 //        return Mono.just("User created");
         // the above code of line means that it emits only one string which is user created.
         // take createUserRequest object and transform it to UserRest
@@ -33,13 +33,15 @@ public class UserController {
 
     // the reason why this single user id, one cannot put mono is because it does not block thread, its quite simple to process unlike creating some data, may block a thread.
     @GetMapping("/{id}")
-    public Mono<userRest> getUsers(@PathVariable("id") UUID id){
-return Mono.just(new userRest(id, "First name", "Last name", "email"));
+    public Mono<userRest> getUsers(@PathVariable("id") UUID id) {
+        return Mono.just(new userRest(id, "First name", "Last name", "email"));
     }
 
     @GetMapping
-    public Flux<userRest> getUsers(){
-     return Flux.just(new userRest(UUID.randomUUID(), "First name", "Last name", "email"));
+    // url will be structured to sth like this
+    // /users?offset=0&limit=50
+    public Flux<userRest> getUsers(@RequestParam(value = "offset", defaultValue = "0") int offset, @RequestParam(value = "limit", defaultValue = "50") int limit) {
+        return Flux.just(new userRest(UUID.randomUUID(), "First name", "Last name", "email"));
     }
 
 
