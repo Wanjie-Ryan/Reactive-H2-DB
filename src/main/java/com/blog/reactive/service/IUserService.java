@@ -4,6 +4,10 @@ import com.blog.reactive.controller.CreateUserRequest;
 import com.blog.reactive.controller.userRest;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 public interface IUserService {
     Mono<userRest> createUser(Mono<CreateUserRequest> createUserRequest);
+    // the reason why the UUID is not wrapped in Mono is because the id is provided immediately the function is called, thus not asynchronous
+    Mono<userRest> getUserById(UUID id);
 }

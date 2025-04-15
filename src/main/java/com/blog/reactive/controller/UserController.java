@@ -42,8 +42,10 @@ public class UserController {
 
     // the reason why this single user id, one cannot put mono is because it does not block thread, its quite simple to process unlike creating some data, may block a thread.
     @GetMapping("/{id}")
-    public Mono<userRest> getUsers(@PathVariable("id") UUID id) {
-        return Mono.just(new userRest(id, "First name", "Last name", "email"));
+    public Mono<ResponseEntity<userRest>> getUsers(@PathVariable("id") UUID id) {
+//        return Mono.just(new userRest(id, "First name", "Last name", "email"));
+        return userService.getUserById(id).map(userRest -> ResponseEntity.status(HttpStatus.OK).body(userRest)).switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build()));
+        // the switch if empty method provides a fallback,, like if the record was not found, show this or do this
     }
 
     @GetMapping

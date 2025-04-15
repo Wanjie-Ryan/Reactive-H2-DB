@@ -17,6 +17,7 @@ public class UserController {
 
     @Autowired
     private IUserServiceImpl userService;
+
     @PostMapping
     // request body annotation deserializes a json into java object
     // the valid annotation tells spring to validate the incoming JSON object
@@ -34,16 +35,16 @@ public class UserController {
 //        return createUserRequest.map(request -> new userRest(UUID.randomUUID(), request.getFirstName(), request.getLastName(), request.getEmail())).map(userRest -> ResponseEntity.status(HttpStatus.CREATED).body(userRest));
         // java takes the userRest object and converts it to JSON.
 
-       return userService.createUser(createUserRequest).map(Userrest->ResponseEntity.status(HttpStatus.CREATED).body(Userrest));
-
+        return userService.createUser(createUserRequest).map(Userrest -> ResponseEntity.status(HttpStatus.CREATED).body(Userrest));
 
 
     }
 
     // the reason why this single user id, one cannot put mono is because it does not block thread, its quite simple to process unlike creating some data, may block a thread.
     @GetMapping("/{id}")
-    public Mono<userRest> getUsers(@PathVariable("id") UUID id) {
-        return Mono.just(new userRest(id, "First name", "Last name", "email"));
+    public Mono<ResponseEntity<userRest>> getUsers(@PathVariable("id") UUID id) {
+//        return Mono.just(new userRest(id, "First name", "Last name", "email"));
+        return userService.getUserById(id).map(userRest -> ResponseEntity.status(HttpStatus.OK).body(userRest)).switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build()));
     }
 
     @GetMapping

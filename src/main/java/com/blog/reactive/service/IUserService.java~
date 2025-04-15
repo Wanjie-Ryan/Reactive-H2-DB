@@ -1,5 +1,0 @@
-package com.blog.reactive.service;
-
-public interface IUserService {
-    Mono<User>
-}
