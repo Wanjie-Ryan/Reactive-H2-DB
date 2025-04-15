@@ -52,7 +52,8 @@ public class UserController {
     // url will be structured to sth like this
     // /users?offset=0&limit=50
     public Flux<userRest> getUsers(@RequestParam(value = "offset", defaultValue = "0") int offset, @RequestParam(value = "limit", defaultValue = "50") int limit) {
-        return Flux.just(new userRest(UUID.randomUUID(), "First name", "Last name", "email"));
+//        return Flux.just(new userRest(UUID.randomUUID(), "First name", "Last name", "email"));
+        return userService.findAll(offset, limit);
     }
 
 

@@ -45,13 +45,14 @@ public class UserController {
     public Mono<ResponseEntity<userRest>> getUsers(@PathVariable("id") UUID id) {
 //        return Mono.just(new userRest(id, "First name", "Last name", "email"));
         return userService.getUserById(id).map(userRest -> ResponseEntity.status(HttpStatus.OK).body(userRest)).switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build()));
+        // the switch if empty method provides a fallback,, like if the record was not found, show this or do this
     }
 
     @GetMapping
     // url will be structured to sth like this
     // /users?offset=0&limit=50
     public Flux<userRest> getUsers(@RequestParam(value = "offset", defaultValue = "0") int offset, @RequestParam(value = "limit", defaultValue = "50") int limit) {
-        return Flux.just(new userRest(UUID.randomUUID(), "First name", "Last name", "email"));
+//        return Flux.just(new userRest(UUID.randomUUID(), "First name", "Last name", "email"));
     }
 
 

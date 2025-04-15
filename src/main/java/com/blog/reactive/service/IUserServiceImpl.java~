@@ -28,15 +28,15 @@ public class IUserServiceImpl implements IUserService {
     public Mono<userRest> createUser(Mono<CreateUserRequest> createUserRequest) {
         // .map is used to transform an element emitted by mono, into another form
         // flat map returns a mono of userEntity
-        return createUserRequest.map(createUserRequests -> convertToEntity(createUserRequests)).flatMap(UserEntity -> userRepository.save(UserEntity)).map(UserEntity -> convertToRest(UserEntity)).onErrorMap(throwable -> {
-            if (throwable instanceof DuplicateKeyException) {
+        return createUserRequest.map(createUserRequests -> convertToEntity(createUserRequests)).flatMap(UserEntity -> userRepository.save(UserEntity)).map(UserEntity -> convertToRest(UserEntity)).onErrorMap(throwable->{
+            if(throwable instanceof DuplicateKeyException){
                 return new ResponseStatusException(HttpStatus.CONFLICT, throwable.getMessage());
             } else if (throwable instanceof DataIntegrityViolationException) {
                 return new ResponseStatusException(HttpStatus.BAD_REQUEST, throwable.getMessage());
             } else {
                 return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, throwable.getMessage());
             }
-        });
+        } );
 
         // to catch a more general exception, one can use the throwable keyword
     }
