@@ -1,6 +1,8 @@
 package com.blog.reactive.controller;
 
+import com.blog.reactive.service.IUserServiceImpl;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
+    @Autowired
+    private IUserServiceImpl userService;
 
     @PostMapping
     // request body annotation deserializes a json into java object
@@ -27,8 +32,12 @@ public class UserController {
         // the above code of line means that it emits only one string which is user created.
         // take createUserRequest object and transform it to UserRest
         // the map request takes content from the userRequest object, changes it UserRest object
-        return createUserRequest.map(request -> new userRest(UUID.randomUUID(), request.getFirstName(), request.getLastName(), request.getEmail())).map(userRest -> ResponseEntity.status(HttpStatus.CREATED).body(userRest));
+//        return createUserRequest.map(request -> new userRest(UUID.randomUUID(), request.getFirstName(), request.getLastName(), request.getEmail())).map(userRest -> ResponseEntity.status(HttpStatus.CREATED).body(userRest));
         // java takes the userRest object and converts it to JSON.
+
+        return userService.createUser(createUserRequest).map(Userrest -> ResponseEntity.status(HttpStatus.CREATED).body(Userrest));
+
+
     }
 
     // the reason why this single user id, one cannot put mono is because it does not block thread, its quite simple to process unlike creating some data, may block a thread.
