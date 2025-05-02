@@ -11,10 +11,12 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.UUID;
 
@@ -24,11 +26,14 @@ public class IUserServiceImpl implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public Mono<userRest> createUser(Mono<CreateUserRequest> createUserRequest) {
         // .map is used to transform an element emitted by mono, into another form
         // flat map returns a mono of userEntity
-        return createUserRequest.map(createUserRequests -> convertToEntity(createUserRequests)).flatMap(UserEntity -> userRepository.save(UserEntity)).map(UserEntity -> convertToRest(UserEntity)).onErrorMap(throwable -> {
+        return createUserRequest.flatMap(createUserRequests -> convertToEntity(createUserRequests)).flatMap(UserEntity -> userRepository.save(UserEntity)).map(UserEntity -> convertToRest(UserEntity)).onErrorMap(throwable -> {
             if (throwable instanceof DuplicateKeyException) {
                 return new ResponseStatusException(HttpStatus.CONFLICT, throwable.getMessage());
             } else if (throwable instanceof DataIntegrityViolationException) {
@@ -59,11 +64,17 @@ public class IUserServiceImpl implements IUserService {
     }
 
 
-    private UserEntity convertToEntity(CreateUserRequest createUserRequest) {
+    private Mono<UserEntity> convertToEntity(CreateUserRequest createUserRequest) {
+        // form callable is used to wrap potentially blocking operations in a way that they don't execute immediately. it waits to execute until its needed.
+
+        return Mono.fromCallable(()->{
+
         // for beanUtils to work, both objects must have same properties with the same names
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(createUserRequest, userEntity);
+        userEntity.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
         return userEntity;
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 
     private userRest convertToRest(UserEntity userEntity) {
