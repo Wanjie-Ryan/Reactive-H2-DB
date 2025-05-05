@@ -1,0 +1,8 @@
+package com.blog.reactive.controller;
+
+public class AuthenticationRequest {
+    private String email;
+    private String password;
+
+    
+}

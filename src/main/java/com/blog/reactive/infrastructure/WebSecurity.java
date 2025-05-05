@@ -17,7 +17,8 @@ public class WebSecurity {
     // this can be used anywhere else in the app just by asking for it - no need to manually create it everytime.
     @Bean
     SecurityWebFilterChain httpSecurityFilterChain(ServerHttpSecurity http) {
-        return http.authorizeExchange(exchanges -> exchanges.pathMatchers(HttpMethod.POST, "/users").permitAll().anyExchange().authenticated()).csrf(ServerHttpSecurity.CsrfSpec::disable).build();
+        return http.authorizeExchange(exchanges -> exchanges.pathMatchers(HttpMethod.POST, "/users").permitAll().pathMatchers(HttpMethod.POST, "/login")
+                .permitAll().anyExchange().authenticated()).csrf(ServerHttpSecurity.CsrfSpec::disable).build();
 //        CSRF --> Cross Site Request Forgery. Type of attack where malicious actor tricks a user into making unwanted requests to a different site or app on which the user is authenticated. CSRF targets state changing ops (Post, Put, delete requests).
         // The reason to disable CSRF protection might be that the app uses JWT or cookies for stateless auth, whereCSRF is less a concern.
 
