@@ -2,12 +2,13 @@ package com.blog.reactive.service;
 
 import com.blog.reactive.controller.CreateUserRequest;
 import com.blog.reactive.controller.userRest;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-public interface IUserService {
+public interface IUserService extends ReactiveUserDetailsService {
     Mono<userRest> createUser(Mono<CreateUserRequest> createUserRequest);
 
     // the reason why the UUID is not wrapped in Mono is because the id is provided immediately the function is called, thus not asynchronous

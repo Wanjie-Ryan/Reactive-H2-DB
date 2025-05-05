@@ -11,6 +11,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,6 +20,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -81,5 +84,10 @@ public class IUserServiceImpl implements IUserService {
         userRest userRest = new userRest();
         BeanUtils.copyProperties(userEntity, userRest);
         return userRest;
+    }
+
+    @Override
+    public Mono<UserDetails> findByUsername(String username) {
+        return userRepository.findByEmail(username).map(userEntity -> User.withUsername(userEntity.getEmail()).password(userEntity.getPassword()).authorities(new ArrayList<>()).build());
     }
 }

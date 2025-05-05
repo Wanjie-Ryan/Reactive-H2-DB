@@ -11,6 +11,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,7 +34,7 @@ public class IUserServiceImpl implements IUserService {
     public Mono<userRest> createUser(Mono<CreateUserRequest> createUserRequest) {
         // .map is used to transform an element emitted by mono, into another form
         // flat map returns a mono of userEntity
-        return createUserRequest.map(createUserRequests -> convertToEntity(createUserRequests)).flatMap(UserEntity -> userRepository.save(UserEntity)).map(UserEntity -> convertToRest(UserEntity)).onErrorMap(throwable -> {
+        return createUserRequest.flatMap(createUserRequests -> convertToEntity(createUserRequests)).flatMap(UserEntity -> userRepository.save(UserEntity)).map(UserEntity -> convertToRest(UserEntity)).onErrorMap(throwable -> {
             if (throwable instanceof DuplicateKeyException) {
                 return new ResponseStatusException(HttpStatus.CONFLICT, throwable.getMessage());
             } else if (throwable instanceof DataIntegrityViolationException) {
@@ -81,5 +82,10 @@ public class IUserServiceImpl implements IUserService {
         userRest userRest = new userRest();
         BeanUtils.copyProperties(userEntity, userRest);
         return userRest;
+    }
+
+    @Override
+    public Mono<UserDetails> findByUsername(String username) {
+        return userRepository.findByEmail(username);
     }
 }
